@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
 import Cropper, { Area } from "react-easy-crop";
-import NavBar from "../../components/NavBar";
 import Header from "../../layout/Header";
 import { getCroppedImg } from "../../lib/image_transformation";
 import "./CropImage.css";

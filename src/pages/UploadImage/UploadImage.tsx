@@ -4,8 +4,7 @@ import {
   transformToBlackOnWhite,
   transformToWhiteOnTransparent,
 } from "../.././lib/image_transformation";
-import { Link } from "react-router-dom";
-import NavBar from "../../components/NavBar";
+
 import Header from "../../layout/Header";
 
 function UploadImage() {
@@ -117,7 +116,7 @@ function UploadImage() {
   };
 
   return (
-    <div>
+    <div style={{ width: "100%" }}>
       <Header />
       <table>
         <thead>

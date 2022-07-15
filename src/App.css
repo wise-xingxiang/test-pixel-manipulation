@@ -1,4 +1,35 @@
 #root {
-  min-width: 90vw;
+  box-sizing: border-box;
+  min-width: 100vw;
   min-height: 100vh;
+
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  background-image: linear-gradient(
+    175deg,
+    hsl(300deg 27% 83%) 0%,
+    hsl(292deg 30% 82%) 6%,
+    hsl(285deg 32% 82%) 12%,
+    hsl(280deg 35% 82%) 18%,
+    hsl(275deg 37% 81%) 24%,
+    hsl(271deg 39% 81%) 29%,
+    hsl(268deg 41% 80%) 35%,
+    hsl(264deg 44% 80%) 41%,
+    hsl(262deg 46% 80%) 47%,
+    hsl(259deg 48% 79%) 53%,
+    hsl(257deg 49% 79%) 59%,
+    hsl(255deg 51% 78%) 65%,
+    hsl(253deg 53% 78%) 71%,
+    hsl(251deg 55% 78%) 76%,
+    hsl(250deg 57% 77%) 82%,
+    hsl(248deg 58% 77%) 88%,
+    hsl(247deg 60% 76%) 94%,
+    hsl(246deg 61% 76%) 100%
+  );
 }

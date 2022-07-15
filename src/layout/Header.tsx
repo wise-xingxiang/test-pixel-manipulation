@@ -6,6 +6,7 @@ const Header = () => {
     <header
       style={{
         display: "flex",
+        flex: 1,
         flexDirection: "column",
         alignItems: "flex-start",
         paddingBottom: "1rem",
