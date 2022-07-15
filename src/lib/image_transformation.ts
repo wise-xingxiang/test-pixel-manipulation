@@ -1,3 +1,5 @@
+import { Area } from "react-easy-crop";
+
 export const transformToWhiteOnTransparent = (
   pixels: Uint8ClampedArray
 ): void => {
@@ -49,3 +51,40 @@ export const transformToBlackOnWhite = (pixels: Uint8ClampedArray): void => {
 const isCloseToWhite = (red: number, green: number, blue: number) => {
   return red >= 240 && green >= 240 && blue >= 240;
 };
+
+export function getCroppedImg(
+  imageSrc: string | undefined,
+  pixelCrop: Area | undefined
+) {
+  if (!imageSrc || !pixelCrop) {
+    return;
+  }
+  const image = new Image();
+  image.setAttribute("crossOrigin", "anonymous"); // needed to avoid cross-origin issues on CodeSandbox
+  image.src = imageSrc;
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+
+  if (!ctx) {
+    return;
+  }
+  canvas.width = image.width;
+  canvas.height = image.height;
+
+  ctx.drawImage(image, 0, 0);
+
+  const data = ctx.getImageData(
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height
+  );
+  // set canvas width to final desired crop size - this will clear existing context
+  canvas.width = pixelCrop.width;
+  canvas.height = pixelCrop.height;
+
+  // paste generated image at the top left corner
+  ctx.putImageData(data, 0, 0);
+
+  return canvas.toDataURL("image/png", 1);
+}
