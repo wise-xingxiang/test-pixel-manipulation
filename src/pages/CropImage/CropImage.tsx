@@ -4,7 +4,14 @@ import Header from "../../layout/Header";
 import { getCroppedImg } from "../../lib/image_transformation";
 import "./CropImage.css";
 
-const CropImage = () => {
+interface Props {
+  cropConfirmCallback: (
+    fileUri: string | undefined,
+    filename: string | undefined
+  ) => void;
+}
+
+const CropImage = ({ cropConfirmCallback }: Props) => {
   const [imageSrc, setImageSrc] = React.useState<string>();
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -27,8 +34,10 @@ const CropImage = () => {
   const onConfirmCrop = useCallback(async () => {
     try {
       const croppedImage = getCroppedImg(imageSrc, croppedAreaPixels);
-      console.log("donee", { croppedImage });
+
       setCroppedImage(croppedImage);
+
+      cropConfirmCallback(croppedImage, filename);
     } catch (e) {
       console.error(e);
     }
@@ -37,10 +46,9 @@ const CropImage = () => {
   const croppedFileName = useMemo(() => {
     return `${filename}_${new Date().toISOString()}.png`;
   }, [croppedImage, filename]);
-
   return (
     <div style={{ width: "100%" }}>
-      <Header />
+      {/* <Header /> */}
       <main>
         {imageSrc ? (
           <div className="container">
@@ -52,7 +60,7 @@ const CropImage = () => {
                   setCroppedAreaPixels(croppedAreaPixels);
                 }}
                 image={imageSrc}
-                aspect={1 / 1}
+                aspect={2024 / 1276}
                 zoom={zoom}
                 onZoomChange={setZoom}
               />
