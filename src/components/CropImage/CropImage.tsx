@@ -12,10 +12,14 @@ interface Props {
   ) => void;
 }
 
+interface ImgDims {
+  height: number;
+  width: number;
+}
 const CropImage = ({ cropConfirmCallback }: Props) => {
   const [imageSrc, setImageSrc] = useState<string>();
   const [filename, setFilename] = useState<string>();
-  const [fileType, setFileType] = useState<string>();
+  const [imageDimensions, setImageDimensions] = useState<ImgDims>();
 
   const cropperRef = useRef<ReactCropperElement>(null);
 
@@ -32,9 +36,16 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
           console.log("Image uploaded was of type", s);
           setFilename(file.name.split(".").at(0));
           const reader = new FileReader();
-          reader.addEventListener("load", () =>
-            setImageSrc(reader?.result as string)
-          );
+          reader.addEventListener("load", () => {
+            const imgSrc = reader?.result as string;
+            setImageSrc(imgSrc);
+
+            let img = new Image();
+            img.src = imgSrc;
+            img.onload = () => {
+              setImageDimensions({ width: img.width, height: img.height });
+            };
+          });
           reader.readAsDataURL(file);
         }
       });
@@ -57,6 +68,26 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
       <main>
         {imageSrc ? (
           <div className="container">
+            {imageDimensions && (
+              <div>
+                <span>
+                  Width: {imageDimensions.width}, Height:{" "}
+                  {imageDimensions.height}{" "}
+                </span>
+                <span>
+                  Min Width: {IMAGE_MIN_WIDTH_PX}, Min Height:{" "}
+                  {IMAGE_MIN_HEIGHT_PX}
+                </span>
+                {imageDimensions.width < IMAGE_MIN_WIDTH_PX ||
+                imageDimensions.height < IMAGE_MIN_HEIGHT_PX ? (
+                  <p style={{ color: "#FF4136" }}>
+                    Uploaded image is too small.
+                  </p>
+                ) : (
+                  <p style={{ color: "#3D9970" }}>Uploaded image is OK.</p>
+                )}
+              </div>
+            )}
             <div
               className="cropContainer"
               style={{ display: "flex", justifyContent: "center" }}

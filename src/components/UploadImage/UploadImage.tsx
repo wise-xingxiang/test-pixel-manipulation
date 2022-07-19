@@ -22,27 +22,8 @@ function UploadImage({ blobUri, filename }: Props) {
   const [file2Url, setFile2Url] = useState("");
   const [file3Url, setFile3Url] = useState("");
 
-  // Generate the 3 full-sized images
+  // Generate the 2 additional full-sized images
   useEffect(() => {
-    // Obtain the cropped image file blob.
-
-    // Generate the 3 assets - original, white on transparent and black on white IN FULL IMAGE DIMENSIONS.
-    // Save their respective URIs into state.
-
-    const canvas1 = createCanvas();
-    const context1 = canvas1.getContext("2d");
-    if (context1) {
-      context1.clearRect(0, 0, canvas1.width, canvas1.height);
-      const img1 = new Image();
-      img1.crossOrigin = "anonymous";
-      img1.src = blobUri;
-      img1.onload = () => {
-        canvas1.width = img1.width;
-        canvas1.height = img1.height;
-        context1.drawImage(img1, 0, 0);
-      };
-    }
-
     const canvas2 = createCanvas();
     const context2 = canvas2.getContext("2d");
     if (context2) {
@@ -96,7 +77,7 @@ function UploadImage({ blobUri, filename }: Props) {
         setFile3Url(dataURL);
       };
     }
-  }, [file2Url, file3Url]);
+  }, [blobUri, file2Url, file3Url]);
 
   return (
     <div style={{ width: "100%", overflowX: "auto" }}>
@@ -116,6 +97,7 @@ function UploadImage({ blobUri, filename }: Props) {
                 style={{
                   aspectRatio: `${IMAGE_MIN_WIDTH_PX} / ${IMAGE_MIN_HEIGHT_PX}`,
                   width: "25vw",
+                  border: "1px dashed #646cff",
                 }}
               />
             </td>
@@ -125,6 +107,7 @@ function UploadImage({ blobUri, filename }: Props) {
                 style={{
                   aspectRatio: `${IMAGE_MIN_WIDTH_PX} / ${IMAGE_MIN_HEIGHT_PX}`,
                   width: "25vw",
+                  border: "1px dashed #646cff",
                 }}
               />
             </td>
@@ -134,6 +117,7 @@ function UploadImage({ blobUri, filename }: Props) {
                 style={{
                   aspectRatio: `${IMAGE_MIN_WIDTH_PX} / ${IMAGE_MIN_HEIGHT_PX}`,
                   width: "25vw",
+                  border: "1px dashed #646cff",
                 }}
               />
             </td>
