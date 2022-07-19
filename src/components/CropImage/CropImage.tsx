@@ -48,7 +48,6 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
   }, [croppedImage, filename]);
   return (
     <div style={{ width: "100%" }}>
-      {/* <Header /> */}
       <main>
         {imageSrc ? (
           <div className="container">
