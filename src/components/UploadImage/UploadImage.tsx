@@ -4,9 +4,7 @@ import {
   transformToBlackOnWhite,
   transformToWhiteOnTransparent,
 } from "../.././lib/image_transformation";
-
-const IMAGE_MIN_WIDTH_PX = 2024;
-const IMAGE_MIN_HEIGHT_PX = 1276;
+import { IMAGE_MIN_HEIGHT_PX, IMAGE_MIN_WIDTH_PX } from "../../lib/constants";
 
 const DISPLAY_WIDTH_PX = IMAGE_MIN_WIDTH_PX / 4;
 const DISPLAY_HEIGHT_PX = IMAGE_MIN_HEIGHT_PX / 4;
