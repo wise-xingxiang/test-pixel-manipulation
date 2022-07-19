@@ -1,19 +1,44 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
-import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
-import CropImage from "./pages/CropImage";
-import UploadImage from "./pages/UploadImage";
+import CropImage from "./components/CropImage";
+import UploadImage from "./components/UploadImage";
 
 const App = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to="/upload" />} />
-        <Route path="/upload" element={<UploadImage />} />
-        <Route path="/crop" element={<CropImage />} />
-      </Routes>
-    </BrowserRouter>
-  );
+  const [blobUri, setBlobUri] = useState<string>();
+  const [filename, setFilename] = useState<string>();
+
+  if (blobUri && filename) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          flex: 1,
+        }}
+      >
+        <button
+          onClick={() => {
+            setFilename("");
+            setBlobUri("");
+          }}
+          style={{ marginBottom: "2rem" }}
+        >
+          Reset
+        </button>
+        <UploadImage blobUri={blobUri} filename={filename} />
+      </div>
+    );
+  } else {
+    return (
+      <CropImage
+        cropConfirmCallback={(fileUri, _filename) => {
+          setBlobUri(fileUri);
+          setFilename(_filename);
+        }}
+      />
+    );
+  }
 };
 
 export default App;
