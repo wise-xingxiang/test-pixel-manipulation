@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "react": "^18.2.0",
+    "react-cropper": "^2.1.8",
     "react-dom": "^18.2.0",
-    "react-easy-crop": "^4.4.0",
     "react-router-dom": "6"
   },
   "devDependencies": {
