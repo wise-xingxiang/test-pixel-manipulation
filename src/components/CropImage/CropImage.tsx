@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import Cropper, { ReactCropperElement } from "react-cropper";
 import "./CropImage.css";
 import "cropperjs/dist/cropper.css";
-import { IMAGE_MIN_HEIGHT_PX, IMAGE_MIN_WIDTH_PX } from "../../lib/constants";
+import { CARD_HEIGHT_PX, CARD_WIDTH_PX } from "../../lib/constants";
 import { getFileType } from "../../lib/filetype";
 
 interface Props {
@@ -75,11 +75,10 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
                   {imageDimensions.height}{" "}
                 </span>
                 <span>
-                  Min Width: {IMAGE_MIN_WIDTH_PX}, Min Height:{" "}
-                  {IMAGE_MIN_HEIGHT_PX}
+                  Min Width: {CARD_WIDTH_PX}, Min Height: {CARD_HEIGHT_PX}
                 </span>
-                {imageDimensions.width < IMAGE_MIN_WIDTH_PX ||
-                imageDimensions.height < IMAGE_MIN_HEIGHT_PX ? (
+                {imageDimensions.width < CARD_WIDTH_PX ||
+                imageDimensions.height < CARD_HEIGHT_PX ? (
                   <p style={{ color: "#FF4136" }}>
                     Uploaded image is too small.
                   </p>
@@ -96,7 +95,7 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
                 src={imageSrc}
                 style={{ height: "400px", width: "100%" }}
                 // Cropper.js options
-                aspectRatio={IMAGE_MIN_WIDTH_PX / IMAGE_MIN_HEIGHT_PX}
+                aspectRatio={CARD_WIDTH_PX / CARD_HEIGHT_PX}
                 dragMode="move"
                 cropBoxMovable={false}
                 cropBoxResizable={false}

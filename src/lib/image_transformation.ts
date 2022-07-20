@@ -1,3 +1,12 @@
+import {
+  CARD_HEIGHT_PX,
+  CARD_WIDTH_PX,
+  LOGO_HEIGHT_PX,
+  LOGO_WIDTH_PX,
+  LOGO_X_OFFSET_PX,
+  LOGO_Y_OFFSET_PX,
+} from "./constants";
+
 export const transformToWhiteOnTransparent = (
   pixels: Uint8ClampedArray
 ): void => {
@@ -45,6 +54,82 @@ export const transformToBlackOnWhite = (pixels: Uint8ClampedArray): void => {
     }
   }
 };
+
+export const generateTransformedLogo = (
+  srcBlobUri: string,
+  transformationFunc: (pixels: Uint8ClampedArray) => void,
+  desiredFileType: "image/png" | "image/jpeg",
+  callback: (dataUrl: string) => void
+) => {
+  const canvas = document.createElement("canvas");
+  canvas.width = CARD_WIDTH_PX;
+  canvas.height = CARD_HEIGHT_PX;
+
+  const context = canvas.getContext("2d");
+  if (!context) {
+    return;
+  }
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.src = srcBlobUri;
+  img.onload = () => {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    context.drawImage(img, 0, 0);
+
+    const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = imgData.data;
+    transformationFunc(pixels);
+    context.putImageData(imgData, 0, 0);
+
+    const dataURL = canvas.toDataURL(desiredFileType, 1);
+    callback(dataURL);
+  };
+};
+
+export const generateCard = (
+  srcBlobUri: string,
+  desiredFileType: "image/png" | "image/jpeg",
+  callback: (dataUrl: string) => void
+) => {
+  // Create canvas with the dimensions of the card
+  const canvas = document.createElement("canvas");
+  canvas.width = CARD_WIDTH_PX;
+  canvas.height = CARD_HEIGHT_PX;
+
+  // Paint the image onto the crop area
+  const context = canvas.getContext("2d");
+  if (!context) {
+    return;
+  }
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (desiredFileType === "image/jpeg") {
+    // Addtionally, make all background pixels WHITE. Because transparent pixels when converted to JPEG will back BLACK.
+    context.fillStyle = "#fff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.src = srcBlobUri;
+  img.onload = () => {
+    context.drawImage(
+      img,
+      LOGO_X_OFFSET_PX,
+      LOGO_Y_OFFSET_PX,
+      LOGO_WIDTH_PX,
+      LOGO_HEIGHT_PX
+    );
+    const dataURL = canvas.toDataURL(desiredFileType, 1);
+    callback(dataURL);
+  };
+};
+
+// Helpers
 
 const isCloseToWhite = (red: number, green: number, blue: number) => {
   return red >= 240 && green >= 240 && blue >= 240;
