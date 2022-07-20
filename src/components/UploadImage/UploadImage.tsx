@@ -65,7 +65,7 @@ function UploadImage({ blobUri, filename }: Props) {
 
   return (
     <div style={{ width: "100%", overflowX: "auto" }}>
-      <table style={{ marginBlock: "auto", width: "100%" }}>
+      <table style={{ width: "100%" }}>
         <thead>
           <tr>
             <th />

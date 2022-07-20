@@ -71,8 +71,8 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
             {imageDimensions && (
               <div>
                 <span>
-                  Width: {imageDimensions.width}, Height:{" "}
-                  {imageDimensions.height}{" "}
+                  Width: {imageDimensions.width}, Height:
+                  {imageDimensions.height}
                 </span>
                 <span>
                   Min Width: {CARD_WIDTH_PX}, Min Height: {CARD_HEIGHT_PX}
@@ -93,7 +93,8 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
             >
               <Cropper
                 src={imageSrc}
-                style={{ height: "400px", width: "100%" }}
+                // style={{ height: "500px", maxWidth: "100vw" }}
+                // background={false}
                 // Cropper.js options
                 aspectRatio={CARD_WIDTH_PX / CARD_HEIGHT_PX}
                 dragMode="move"
