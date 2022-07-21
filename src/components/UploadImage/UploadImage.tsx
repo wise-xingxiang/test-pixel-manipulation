@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import "./UploadImage.css";
 import {
-  generateCard,
+  shrinkLogo,
   generateTransformedLogo,
   transformToBlackOnWhite,
   transformToWhiteOnTransparent,
+  generateCardImage,
 } from "../.././lib/image_transformation";
 import {
   CARD_HEIGHT_PX,
@@ -27,6 +28,10 @@ function UploadImage({ blobUri, filename }: Props) {
   const [logo2Url, setLogo2Url] = useState("");
   const [logo3Url, setLogo3Url] = useState("");
 
+  const [shrunkLogo1Url, setShrunkLogo1Url] = useState("");
+  const [shrunkLogo2Url, setShrunkLogo2Url] = useState("");
+  const [shrunkLogo3Url, setShrunkLogo3Url] = useState("");
+
   const [card1Url, setCard1Url] = useState("");
   const [card2Url, setCard2Url] = useState("");
   const [card3Url, setCard3Url] = useState("");
@@ -48,19 +53,22 @@ function UploadImage({ blobUri, filename }: Props) {
     );
   }, [blobUri]);
 
-  // Generate full-card image: Original
+  // Generate shrunk logo and full-card image: Original
   useEffect(() => {
-    generateCard(blobUri, "image/png", setCard1Url);
+    shrinkLogo(blobUri, "image/png", setShrunkLogo1Url);
+    generateCardImage(blobUri, setCard1Url);
   }, [blobUri]);
 
-  // Generate full-card image: White on transparent
+  // Generate shrunk logo and full-card image: White on transparent
   useEffect(() => {
-    generateCard(logo2Url, "image/png", setCard2Url);
+    shrinkLogo(logo2Url, "image/png", setShrunkLogo2Url);
+    generateCardImage(logo2Url, setCard2Url);
   }, [logo2Url]);
 
-  // Generate full-card image: Black on white
+  // Generate shrunk logo and full-card image: Black on white
   useEffect(() => {
-    generateCard(logo3Url, "image/jpeg", setCard3Url);
+    shrinkLogo(logo3Url, "image/jpeg", setShrunkLogo3Url);
+    generateCardImage(logo3Url, setCard3Url);
   }, [logo3Url]);
 
   return (
@@ -137,10 +145,10 @@ function UploadImage({ blobUri, filename }: Props) {
           <tr style={{ height: "3rem" }} />
           {/* Spacer row */}
           <tr>
-            <th>Cards</th>
+            <th>Shrunk logos</th>
             <td>
               <img
-                src={card1Url}
+                src={shrunkLogo1Url}
                 style={{
                   aspectRatio: `${CARD_WIDTH_PX} / ${CARD_HEIGHT_PX}`,
                   width: "20vw",
@@ -151,7 +159,7 @@ function UploadImage({ blobUri, filename }: Props) {
 
             <td>
               <img
-                src={card2Url}
+                src={shrunkLogo2Url}
                 style={{
                   aspectRatio: `${CARD_WIDTH_PX} / ${CARD_HEIGHT_PX}`,
                   width: "20vw",
@@ -161,11 +169,78 @@ function UploadImage({ blobUri, filename }: Props) {
             </td>
             <td>
               <img
-                src={card3Url}
+                src={shrunkLogo3Url}
                 style={{
                   aspectRatio: `${CARD_WIDTH_PX} / ${CARD_HEIGHT_PX}`,
                   width: "20vw",
                   border: "1px dashed #646cff",
+                }}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td />
+            <td>
+              {shrunkLogo1Url && (
+                <a
+                  href={shrunkLogo1Url}
+                  download={"shrunklogo_" + filename + "_original"}
+                >
+                  Download
+                </a>
+              )}
+            </td>
+            <td>
+              {shrunkLogo2Url && (
+                <a
+                  href={shrunkLogo2Url}
+                  download={"shrunklogo_" + filename + "_white_transparent"}
+                >
+                  Download
+                </a>
+              )}
+            </td>
+            <td>
+              {shrunkLogo3Url && (
+                <a
+                  href={shrunkLogo3Url}
+                  download={"shrunklogo_" + filename + "_black_white"}
+                >
+                  Download
+                </a>
+              )}
+            </td>
+          </tr>
+          {/* Spacer row */}
+          <tr style={{ height: "3rem" }} />
+          {/* Spacer row */}
+          <tr>
+            <th>Cards</th>
+            <td>
+              <img
+                src={card1Url}
+                style={{
+                  aspectRatio: `${CARD_WIDTH_PX} / ${CARD_HEIGHT_PX}`,
+                  width: "20vw",
+                }}
+              />
+            </td>
+
+            <td>
+              <img
+                src={card2Url}
+                style={{
+                  aspectRatio: `${CARD_WIDTH_PX} / ${CARD_HEIGHT_PX}`,
+                  width: "20vw",
+                }}
+              />
+            </td>
+            <td>
+              <img
+                src={card3Url}
+                style={{
+                  aspectRatio: `${CARD_WIDTH_PX} / ${CARD_HEIGHT_PX}`,
+                  width: "20vw",
                 }}
               />
             </td>

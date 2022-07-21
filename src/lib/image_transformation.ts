@@ -7,6 +7,8 @@ import {
   LOGO_Y_OFFSET_PX,
 } from "./constants";
 
+import template_card_url from "../assets/Template_card.png";
+
 export const transformToWhiteOnTransparent = (
   pixels: Uint8ClampedArray
 ): void => {
@@ -89,7 +91,7 @@ export const generateTransformedLogo = (
   };
 };
 
-export const generateCard = (
+export const shrinkLogo = (
   srcBlobUri: string,
   desiredFileType: "image/png" | "image/jpeg",
   callback: (dataUrl: string) => void
@@ -126,6 +128,48 @@ export const generateCard = (
     );
     const dataURL = canvas.toDataURL(desiredFileType, 1);
     callback(dataURL);
+  };
+};
+
+export const generateCardImage = (
+  srcBlobUri: string,
+  callback: (dataUrl: string) => void
+) => {
+  // Create canvas with the dimensions of the card
+  const canvas = document.createElement("canvas");
+  canvas.width = CARD_WIDTH_PX;
+  canvas.height = CARD_HEIGHT_PX;
+
+  // Paint the image onto the crop area
+  const context = canvas.getContext("2d");
+  if (!context) {
+    return;
+  }
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw the template card image
+  const baseImg = new Image();
+  baseImg.crossOrigin = "anonymous";
+  baseImg.src = template_card_url;
+  baseImg.onload = () => {
+    context.drawImage(baseImg, 0, 0);
+
+    // Draw the logo within the template card image
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = srcBlobUri;
+    img.onload = () => {
+      context.drawImage(
+        img,
+        LOGO_X_OFFSET_PX,
+        LOGO_Y_OFFSET_PX,
+        LOGO_WIDTH_PX,
+        LOGO_HEIGHT_PX
+      );
+      const dataURL = canvas.toDataURL("image/png", 1);
+      callback(dataURL);
+    };
   };
 };
 

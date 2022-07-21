@@ -67,7 +67,13 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
     <div style={{ width: "100%" }}>
       <main>
         {imageSrc ? (
-          <div className="container">
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+            }}
+          >
             {imageDimensions && (
               <div>
                 <span>
@@ -88,19 +94,25 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
               </div>
             )}
             <div
-              className="cropContainer"
-              style={{ display: "flex", justifyContent: "center" }}
+              style={{
+                position: "relative",
+                display: "flex",
+                justifyContent: "center",
+                height: "50vh",
+                width: "100%",
+                backgroundColor: "#333",
+              }}
             >
               <Cropper
                 src={imageSrc}
                 // style={{ height: "500px", maxWidth: "100vw" }}
-                // background={false}
                 // Cropper.js options
+                background={true}
                 aspectRatio={CARD_WIDTH_PX / CARD_HEIGHT_PX}
                 dragMode="move"
                 cropBoxMovable={false}
                 cropBoxResizable={false}
-                guides={true}
+                guides={false}
                 ref={cropperRef}
               />
             </div>

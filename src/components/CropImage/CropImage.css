@@ -3,14 +3,22 @@ span {
   flex-direction: column;
 }
 
-.container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+/* override the default bg */
+.cropper-bg {
+  background-image: url("../../assets/Template_card.png") !important;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position-x: center;
+  background-position-y: center;
 }
-.cropContainer {
-  height: 400px;
-  background-color: #333;
-  width: 100%;
-  position: relative;
+
+.cropper-crop-box {
+  --card-width: 50vw;
+  --aspect-ratio: calc(2024 / 1276);
+  --card-height: calc(var(--card-width) / var(--aspect-ratio));
+
+  width: calc(var(--card-width) * 3 / 5) !important;
+  height: calc(var(--card-height) * 3 / 5) !important;
+  transform: translateX(calc(var(--card-width) / 15))
+    translateY(calc(var(--card-height) / 3)) !important;
 }
