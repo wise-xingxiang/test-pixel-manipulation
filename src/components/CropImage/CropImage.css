@@ -5,8 +5,12 @@ span {
 
 :root {
   --card-width: 50vw;
-  --aspect-ratio: calc(2024 / 1276);
-  --card-height: calc(var(--card-width) / var(--aspect-ratio));
+  --px-card-width: 2024;
+  --card-height: calc(var(--card-width) * 1276 / var(--px-card-width));
+  --logo-width: calc(var(--card-width) * 1323 / var(--px-card-width));
+  --logo-height: calc(var(--card-width) * 781 / var(--px-card-width));
+  --logo-x-offset: calc(var(--card-width) * 120 / var(--px-card-width));
+  --logo-y-offset: calc(var(--card-width) * 303 / var(--px-card-width));
 }
 
 .outer-div {
@@ -40,10 +44,9 @@ span {
 }
 
 .cropper-crop-box {
-  width: calc(var(--card-width) * 3 / 5) !important;
-  height: calc(var(--card-height) * 3 / 5) !important;
-  transform: translateX(calc(var(--card-width) / 15))
-    translateY(calc(var(--card-height) / 3)) !important;
+  width: var(--logo-width) !important;
+  height: var(--logo-height) !important;
+  transform: translateX(var(--logo-x-offset)) translateY(var(--logo-y-offset)) !important;
 }
 
 .cropper-canvas {

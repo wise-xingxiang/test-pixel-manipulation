@@ -68,8 +68,45 @@ function UploadImage({ blobUri, filename }: Props) {
     generateCardImage(logo3Url, setCard3Url);
   }, [logo3Url]);
 
+  // TODO:
+  // 1. Generate the preview card image
+  // 2. Transform the given transparent image into the black white logo image.
+  // 3. Display all 3 (preview card, transparent logo, bw logo) as images.
+
+  useEffect(() => {
+    generateCardImage(blobUri, (previewCardUrl) => {
+      setCard1Url(previewCardUrl);
+
+      generateTransformedLogo(
+        blobUri,
+        transformToBlackOnWhite,
+        "image/jpeg",
+        (bwLogoUrl) => setLogo3Url(bwLogoUrl)
+      );
+    });
+  }, [blobUri]);
+
   return (
-    <div style={{ width: "100%", overflowX: "auto" }}>
+    <div
+      style={{
+        width: "100%",
+        overflowX: "auto",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
+    >
+      <div>
+        {/* Contains the final preview of the card with the custom logo. */}
+        <img
+          src={card1Url}
+          style={{
+            aspectRatio: `${CARD_WIDTH_PX} / ${CARD_HEIGHT_PX}`,
+            width: "20vw",
+            border: "1px dashed #646cff",
+          }}
+        />
+      </div>
       <table style={{ width: "100%" }}>
         <thead>
           <tr>

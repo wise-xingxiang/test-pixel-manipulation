@@ -2,13 +2,7 @@ import React, { useState, useRef } from "react";
 import Cropper, { ReactCropperElement } from "react-cropper";
 import "./CropImage.css";
 import "cropperjs/dist/cropper.css";
-import {
-  CARD_HEIGHT_PX,
-  CARD_WIDTH_PX,
-  LOGO_HEIGHT_PX,
-  LOGO_WIDTH_PX,
-  LOGO_Y_OFFSET_PX,
-} from "../../lib/constants";
+import { PX_DIMS } from "../../lib/constants";
 import { getFileType } from "../../lib/filetype";
 import {
   generateTransformedLogo,
@@ -103,10 +97,11 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
                   {imageDimensions.height}
                 </span>
                 <span>
-                  Min Width: {CARD_WIDTH_PX}, Min Height: {CARD_HEIGHT_PX}
+                  Min Width: {PX_DIMS.CARD_WIDTH}, Min Height:{" "}
+                  {PX_DIMS.CARD_HEIGHT}
                 </span>
-                {imageDimensions.width < CARD_WIDTH_PX ||
-                imageDimensions.height < CARD_HEIGHT_PX ? (
+                {imageDimensions.width < PX_DIMS.CARD_WIDTH ||
+                imageDimensions.height < PX_DIMS.CARD_HEIGHT ? (
                   <p style={{ color: "#FF4136" }}>
                     Uploaded image is too small.
                   </p>
@@ -118,10 +113,9 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
             <div className="outer-div">
               <Cropper
                 src={imageSrc}
-                style={{ height: "500px", maxWidth: "100vw" }}
+                // style={{ height: "500px", maxWidth: "100vw" }}
                 // Cropper.js options
                 background={true}
-                aspectRatio={CARD_WIDTH_PX / CARD_HEIGHT_PX}
                 dragMode="move"
                 cropBoxMovable={false}
                 cropBoxResizable={false}
@@ -134,12 +128,18 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
                     return;
                   }
                   const cardWidth = windowWidth * 0.5;
-                  const cardHeight =
-                    (cardWidth / CARD_WIDTH_PX) * CARD_HEIGHT_PX;
-                  const logoXOffset = cardWidth / 15;
-                  const logoYOffset = cardHeight / 3;
-                  const logoWidth = (cardWidth * 3) / 5;
-                  const logoHeight = (cardHeight * 3) / 5;
+
+                  const logoXOffset =
+                    (cardWidth / PX_DIMS.CARD_WIDTH) * PX_DIMS.LOGO_X_OFFSET;
+
+                  const logoYOffset =
+                    (cardWidth / PX_DIMS.CARD_WIDTH) * PX_DIMS.LOGO_Y_OFFSET;
+
+                  const logoWidth =
+                    (cardWidth / PX_DIMS.CARD_WIDTH) * PX_DIMS.LOGO_WIDTH;
+
+                  const logoHeight =
+                    (cardWidth / PX_DIMS.CARD_WIDTH) * PX_DIMS.LOGO_HEIGHT;
 
                   cropperRef.current?.cropper.setCropBoxData({
                     left: logoXOffset,

@@ -58,6 +58,32 @@ export const transformToBlackOnWhite = (pixels: Uint8ClampedArray): void => {
   }
 };
 
+export const fromWhiteOnTransparentToBlackOnWhite = (
+  pixels: Uint8ClampedArray
+): void => {
+  // Modify pixels in-place.
+  for (let i = 0; i < pixels?.length; i += 4) {
+    let red = pixels[i];
+    let green = pixels[i + 1];
+    let blue = pixels[i + 2];
+    let alpha = pixels[i + 3];
+
+    // If a > 0.1 or rgb >= (240, 240, 240), then set rgba to (255, 255, 255, 255)
+    // Else, set rgba to (0, 0, 0, 255)
+    if (red === 255 && green === 255 && blue === 255) {
+      pixels[i] = 0;
+      pixels[i + 1] = 0;
+      pixels[i + 2] = 0;
+      pixels[i + 3] = 255; // Zero opacity, Full alpha
+    } else {
+      pixels[i] = 255;
+      pixels[i + 1] = 255;
+      pixels[i + 2] = 255;
+      pixels[i + 3] = 255; // Zero opacity, Full alpha
+    }
+  }
+};
+
 export const generateTransformedLogo = (
   srcBlobUri: string,
   transformationFunc: (pixels: Uint8ClampedArray) => void,
