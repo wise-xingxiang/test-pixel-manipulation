@@ -8,6 +8,7 @@ import {
 } from "./constants";
 
 import template_card_url from "../assets/Template_card.png";
+import template_card_plain_url from "../assets/Template_card_plain.png";
 
 export const transformToWhiteOnTransparent = (
   pixels: Uint8ClampedArray
@@ -151,7 +152,7 @@ export const generateCardImage = (
   // Draw the template card image
   const baseImg = new Image();
   baseImg.crossOrigin = "anonymous";
-  baseImg.src = template_card_url;
+  baseImg.src = template_card_plain_url;
   baseImg.onload = () => {
     context.drawImage(baseImg, 0, 0);
 

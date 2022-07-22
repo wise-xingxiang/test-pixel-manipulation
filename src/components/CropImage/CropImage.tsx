@@ -2,8 +2,19 @@ import React, { useState, useRef } from "react";
 import Cropper, { ReactCropperElement } from "react-cropper";
 import "./CropImage.css";
 import "cropperjs/dist/cropper.css";
-import { CARD_HEIGHT_PX, CARD_WIDTH_PX } from "../../lib/constants";
+import {
+  CARD_HEIGHT_PX,
+  CARD_WIDTH_PX,
+  LOGO_HEIGHT_PX,
+  LOGO_WIDTH_PX,
+  LOGO_Y_OFFSET_PX,
+} from "../../lib/constants";
 import { getFileType } from "../../lib/filetype";
+import {
+  generateTransformedLogo,
+  transformToWhiteOnTransparent,
+} from "../../lib/image_transformation";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 interface Props {
   cropConfirmCallback: (
@@ -20,6 +31,8 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
   const [imageSrc, setImageSrc] = useState<string>();
   const [filename, setFilename] = useState<string>();
   const [imageDimensions, setImageDimensions] = useState<ImgDims>();
+
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
   const cropperRef = useRef<ReactCropperElement>(null);
 
@@ -38,13 +51,22 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
           const reader = new FileReader();
           reader.addEventListener("load", () => {
             const imgSrc = reader?.result as string;
-            setImageSrc(imgSrc);
 
-            let img = new Image();
-            img.src = imgSrc;
-            img.onload = () => {
-              setImageDimensions({ width: img.width, height: img.height });
-            };
+            // Transform img to transparent bg
+            generateTransformedLogo(
+              imgSrc,
+              transformToWhiteOnTransparent,
+              "image/png",
+              (newImgSrc) => {
+                setImageSrc(newImgSrc);
+
+                let img = new Image();
+                img.src = newImgSrc;
+                img.onload = () => {
+                  setImageDimensions({ width: img.width, height: img.height });
+                };
+              }
+            );
           });
           reader.readAsDataURL(file);
         }
@@ -93,27 +115,39 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
                 )}
               </div>
             )}
-            <div
-              style={{
-                position: "relative",
-                display: "flex",
-                justifyContent: "center",
-                height: "50vh",
-                width: "100%",
-                backgroundColor: "#333",
-              }}
-            >
+            <div className="outer-div">
               <Cropper
                 src={imageSrc}
-                // style={{ height: "500px", maxWidth: "100vw" }}
+                style={{ height: "500px", maxWidth: "100vw" }}
                 // Cropper.js options
                 background={true}
                 aspectRatio={CARD_WIDTH_PX / CARD_HEIGHT_PX}
                 dragMode="move"
                 cropBoxMovable={false}
                 cropBoxResizable={false}
+                center={false}
                 guides={false}
+                modal={false}
                 ref={cropperRef}
+                ready={() => {
+                  if (!windowWidth || !windowHeight) {
+                    return;
+                  }
+                  const cardWidth = windowWidth * 0.5;
+                  const cardHeight =
+                    (cardWidth / CARD_WIDTH_PX) * CARD_HEIGHT_PX;
+                  const logoXOffset = cardWidth / 15;
+                  const logoYOffset = cardHeight / 3;
+                  const logoWidth = (cardWidth * 3) / 5;
+                  const logoHeight = (cardHeight * 3) / 5;
+
+                  cropperRef.current?.cropper.setCropBoxData({
+                    left: logoXOffset,
+                    top: logoYOffset,
+                    width: logoWidth,
+                    height: logoHeight,
+                  });
+                }}
               />
             </div>
             <div>

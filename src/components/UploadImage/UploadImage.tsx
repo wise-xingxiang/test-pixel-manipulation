@@ -16,9 +16,6 @@ import {
   LOGO_Y_OFFSET_PX,
 } from "../../lib/constants";
 
-const DISPLAY_WIDTH_PX = CARD_WIDTH_PX / 4;
-const DISPLAY_HEIGHT_PX = CARD_HEIGHT_PX / 4;
-
 interface Props {
   blobUri: string;
   filename: string;
