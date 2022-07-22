@@ -149,6 +149,31 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
                   });
                 }}
               />
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  position: "absolute",
+                  bottom: "2rem",
+                  left: "-4rem",
+                }}
+              >
+                <button
+                  style={{ marginBottom: "1rem" }}
+                  onClick={() => {
+                    cropperRef.current?.cropper.zoom(0.01);
+                  }}
+                >
+                  +
+                </button>
+                <button
+                  onClick={() => {
+                    cropperRef.current?.cropper.zoom(-0.01);
+                  }}
+                >
+                  -
+                </button>
+              </div>
             </div>
             <div>
               <button
