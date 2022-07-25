@@ -147,6 +147,8 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
                     width: logoWidth,
                     height: logoHeight,
                   });
+
+                  cropperRef.current?.cropper.moveTo(logoXOffset, logoYOffset);
                 }}
               />
               <div
