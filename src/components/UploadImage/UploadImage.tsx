@@ -1,13 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import "./UploadImage.css";
 import {
+  shrinkLogo,
+  generateTransformedLogo,
   transformToBlackOnWhite,
   transformToWhiteOnTransparent,
+  generateCardImage,
 } from "../.././lib/image_transformation";
-import { IMAGE_MIN_HEIGHT_PX, IMAGE_MIN_WIDTH_PX } from "../../lib/constants";
-
-const DISPLAY_WIDTH_PX = IMAGE_MIN_WIDTH_PX / 4;
-const DISPLAY_HEIGHT_PX = IMAGE_MIN_HEIGHT_PX / 4;
+import {
+  CARD_HEIGHT_PX,
+  CARD_WIDTH_PX,
+  LOGO_HEIGHT_PX,
+  LOGO_WIDTH_PX,
+  LOGO_X_OFFSET_PX,
+  LOGO_Y_OFFSET_PX,
+} from "../../lib/constants";
 
 interface Props {
   blobUri: string;
@@ -15,75 +22,95 @@ interface Props {
 }
 
 function UploadImage({ blobUri, filename }: Props) {
-  const originalRef = useRef<HTMLCanvasElement>(null);
-  const editedOneRef = useRef<HTMLCanvasElement>(null);
-  const editedTwoRef = useRef<HTMLCanvasElement>(null);
+  const [logo2Url, setLogo2Url] = useState("");
+  const [logo3Url, setLogo3Url] = useState("");
 
-  const [file2Url, setFile2Url] = useState("");
-  const [file3Url, setFile3Url] = useState("");
+  const [shrunkLogo1Url, setShrunkLogo1Url] = useState("");
+  const [shrunkLogo2Url, setShrunkLogo2Url] = useState("");
+  const [shrunkLogo3Url, setShrunkLogo3Url] = useState("");
+
+  const [card1Url, setCard1Url] = useState("");
+  const [card2Url, setCard2Url] = useState("");
+  const [card3Url, setCard3Url] = useState("");
 
   // Generate the 2 additional full-sized images
   useEffect(() => {
-    const canvas2 = createCanvas();
-    const context2 = canvas2.getContext("2d");
-    if (context2) {
-      context2.clearRect(0, 0, canvas2.width, canvas2.height);
-      const img2 = new Image();
-      img2.crossOrigin = "anonymous";
-      img2.src = blobUri;
-      img2.onload = () => {
-        canvas2.width = img2.width;
-        canvas2.height = img2.height;
-        context2.drawImage(img2, 0, 0);
+    generateTransformedLogo(
+      blobUri,
+      transformToWhiteOnTransparent,
+      "image/png",
+      (dataUrl) => setLogo2Url(dataUrl)
+    );
 
-        const imgData2 = context2.getImageData(
-          0,
-          0,
-          canvas2.width,
-          canvas2.height
-        );
-        const pixels = imgData2.data;
-        transformToWhiteOnTransparent(pixels);
-        context2.putImageData(imgData2, 0, 0);
+    generateTransformedLogo(
+      blobUri,
+      transformToBlackOnWhite,
+      "image/jpeg",
+      (dataUrl) => setLogo3Url(dataUrl)
+    );
+  }, [blobUri]);
 
-        const dataURL = canvas2.toDataURL("image/png", 1); // Save as png to retain transparency.
-        setFile2Url(dataURL);
-      };
-    }
+  // Generate shrunk logo and full-card image: Original
+  useEffect(() => {
+    shrinkLogo(blobUri, "image/png", setShrunkLogo1Url);
+    generateCardImage(blobUri, setCard1Url);
+  }, [blobUri]);
 
-    const canvas3 = createCanvas();
-    const context3 = canvas3.getContext("2d");
-    if (context3) {
-      context3.clearRect(0, 0, canvas3.width, canvas3.height);
-      const img3 = new Image();
-      img3.crossOrigin = "anonymous";
-      img3.src = blobUri;
-      img3.onload = () => {
-        canvas3.width = img3.width;
-        canvas3.height = img3.height;
-        context3.drawImage(img3, 0, 0);
+  // Generate shrunk logo and full-card image: White on transparent
+  useEffect(() => {
+    shrinkLogo(logo2Url, "image/png", setShrunkLogo2Url);
+    generateCardImage(logo2Url, setCard2Url);
+  }, [logo2Url]);
 
-        const imgData3 = context3.getImageData(
-          0,
-          0,
-          canvas3.width,
-          canvas3.height
-        );
-        const pixels = imgData3.data;
-        transformToBlackOnWhite(pixels);
-        context3.putImageData(imgData3, 0, 0);
+  // Generate shrunk logo and full-card image: Black on white
+  useEffect(() => {
+    shrinkLogo(logo3Url, "image/jpeg", setShrunkLogo3Url);
+    generateCardImage(logo3Url, setCard3Url);
+  }, [logo3Url]);
 
-        const dataURL = canvas3.toDataURL("image/jpeg", 1); // Save as jpeg due to backend requirement.
-        setFile3Url(dataURL);
-      };
-    }
-  }, [blobUri, file2Url, file3Url]);
+  // TODO:
+  // 1. Generate the preview card image
+  // 2. Transform the given transparent image into the black white logo image.
+  // 3. Display all 3 (preview card, transparent logo, bw logo) as images.
+
+  useEffect(() => {
+    generateCardImage(blobUri, (previewCardUrl) => {
+      setCard1Url(previewCardUrl);
+
+      generateTransformedLogo(
+        blobUri,
+        transformToBlackOnWhite,
+        "image/jpeg",
+        (bwLogoUrl) => setLogo3Url(bwLogoUrl)
+      );
+    });
+  }, [blobUri]);
 
   return (
-    <div style={{ width: "100%", overflowX: "auto" }}>
-      <table style={{ marginBlock: "auto", width: "100%" }}>
+    <div
+      style={{
+        width: "100%",
+        overflowX: "auto",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
+    >
+      <div>
+        {/* Contains the final preview of the card with the custom logo. */}
+        <img
+          src={card1Url}
+          style={{
+            aspectRatio: `${CARD_WIDTH_PX} / ${CARD_HEIGHT_PX}`,
+            width: "20vw",
+            border: "1px dashed #646cff",
+          }}
+        />
+      </div>
+      <table style={{ width: "100%" }}>
         <thead>
           <tr>
+            <th />
             <th>Original Image</th>
             <th>White fg + Transparent bg</th>
             <th>Black fg + White bg</th>
@@ -91,32 +118,33 @@ function UploadImage({ blobUri, filename }: Props) {
         </thead>
         <tbody>
           <tr>
+            <th>Logos</th>
             <td>
               <img
                 src={blobUri}
                 style={{
-                  aspectRatio: `${IMAGE_MIN_WIDTH_PX} / ${IMAGE_MIN_HEIGHT_PX}`,
-                  width: "25vw",
+                  aspectRatio: `${CARD_WIDTH_PX} / ${CARD_HEIGHT_PX}`,
+                  width: "20vw",
                   border: "1px dashed #646cff",
                 }}
               />
             </td>
             <td>
               <img
-                src={file2Url}
+                src={logo2Url}
                 style={{
-                  aspectRatio: `${IMAGE_MIN_WIDTH_PX} / ${IMAGE_MIN_HEIGHT_PX}`,
-                  width: "25vw",
+                  aspectRatio: `${CARD_WIDTH_PX} / ${CARD_HEIGHT_PX}`,
+                  width: "20vw",
                   border: "1px dashed #646cff",
                 }}
               />
             </td>
             <td>
               <img
-                src={file3Url}
+                src={logo3Url}
                 style={{
-                  aspectRatio: `${IMAGE_MIN_WIDTH_PX} / ${IMAGE_MIN_HEIGHT_PX}`,
-                  width: "25vw",
+                  aspectRatio: `${CARD_WIDTH_PX} / ${CARD_HEIGHT_PX}`,
+                  width: "20vw",
                   border: "1px dashed #646cff",
                 }}
               />
@@ -124,6 +152,7 @@ function UploadImage({ blobUri, filename }: Props) {
           </tr>
 
           <tr>
+            <td />
             <td>
               {blobUri && (
                 <a href={blobUri} download={filename + "_original"}>
@@ -132,15 +161,149 @@ function UploadImage({ blobUri, filename }: Props) {
               )}
             </td>
             <td>
-              {file2Url && (
-                <a href={file2Url} download={filename + "_white_transparent"}>
+              {logo2Url && (
+                <a href={logo2Url} download={filename + "_white_transparent"}>
                   Download
                 </a>
               )}
             </td>
             <td>
-              {file3Url && (
-                <a href={file3Url} download={filename + "_black_white"}>
+              {logo3Url && (
+                <a href={logo3Url} download={filename + "_black_white"}>
+                  Download
+                </a>
+              )}
+            </td>
+          </tr>
+          {/* Spacer row */}
+          <tr style={{ height: "3rem" }} />
+          {/* Spacer row */}
+          <tr>
+            <th>Shrunk logos</th>
+            <td>
+              <img
+                src={shrunkLogo1Url}
+                style={{
+                  aspectRatio: `${CARD_WIDTH_PX} / ${CARD_HEIGHT_PX}`,
+                  width: "20vw",
+                  border: "1px dashed #646cff",
+                }}
+              />
+            </td>
+
+            <td>
+              <img
+                src={shrunkLogo2Url}
+                style={{
+                  aspectRatio: `${CARD_WIDTH_PX} / ${CARD_HEIGHT_PX}`,
+                  width: "20vw",
+                  border: "1px dashed #646cff",
+                }}
+              />
+            </td>
+            <td>
+              <img
+                src={shrunkLogo3Url}
+                style={{
+                  aspectRatio: `${CARD_WIDTH_PX} / ${CARD_HEIGHT_PX}`,
+                  width: "20vw",
+                  border: "1px dashed #646cff",
+                }}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td />
+            <td>
+              {shrunkLogo1Url && (
+                <a
+                  href={shrunkLogo1Url}
+                  download={"shrunklogo_" + filename + "_original"}
+                >
+                  Download
+                </a>
+              )}
+            </td>
+            <td>
+              {shrunkLogo2Url && (
+                <a
+                  href={shrunkLogo2Url}
+                  download={"shrunklogo_" + filename + "_white_transparent"}
+                >
+                  Download
+                </a>
+              )}
+            </td>
+            <td>
+              {shrunkLogo3Url && (
+                <a
+                  href={shrunkLogo3Url}
+                  download={"shrunklogo_" + filename + "_black_white"}
+                >
+                  Download
+                </a>
+              )}
+            </td>
+          </tr>
+          {/* Spacer row */}
+          <tr style={{ height: "3rem" }} />
+          {/* Spacer row */}
+          <tr>
+            <th>Cards</th>
+            <td>
+              <img
+                src={card1Url}
+                style={{
+                  aspectRatio: `${CARD_WIDTH_PX} / ${CARD_HEIGHT_PX}`,
+                  width: "20vw",
+                }}
+              />
+            </td>
+
+            <td>
+              <img
+                src={card2Url}
+                style={{
+                  aspectRatio: `${CARD_WIDTH_PX} / ${CARD_HEIGHT_PX}`,
+                  width: "20vw",
+                }}
+              />
+            </td>
+            <td>
+              <img
+                src={card3Url}
+                style={{
+                  aspectRatio: `${CARD_WIDTH_PX} / ${CARD_HEIGHT_PX}`,
+                  width: "20vw",
+                }}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td />
+            <td>
+              {card1Url && (
+                <a href={card1Url} download={"card_" + filename + "_original"}>
+                  Download
+                </a>
+              )}
+            </td>
+            <td>
+              {card2Url && (
+                <a
+                  href={card2Url}
+                  download={"card_" + filename + "_white_transparent"}
+                >
+                  Download
+                </a>
+              )}
+            </td>
+            <td>
+              {card3Url && (
+                <a
+                  href={card3Url}
+                  download={"card_" + filename + "_black_white"}
+                >
                   Download
                 </a>
               )}
@@ -153,10 +316,3 @@ function UploadImage({ blobUri, filename }: Props) {
 }
 
 export default UploadImage;
-
-const createCanvas = () => {
-  const canvas = document.createElement("canvas");
-  canvas.width = IMAGE_MIN_WIDTH_PX;
-  canvas.height = IMAGE_MIN_HEIGHT_PX;
-  return canvas;
-};

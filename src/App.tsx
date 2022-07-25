@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import CropImage from "./components/CropImage";
 import Instruction from "./components/Instruction";
+import PreviewFiles from "./components/PreviewFiles";
 import UploadImage from "./components/UploadImage";
 
 const App = () => {
@@ -29,7 +30,7 @@ const App = () => {
           >
             Reset
           </button>
-          <UploadImage blobUri={blobUri} filename={filename} />
+          <PreviewFiles pngLogoUrl={blobUri} filename={filename} />
         </>
       ) : (
         <CropImage

@@ -3,14 +3,52 @@ span {
   flex-direction: column;
 }
 
-.container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+:root {
+  --card-width: 50vw;
+  --px-card-width: 2024;
+  --card-height: calc(var(--card-width) * 1276 / var(--px-card-width));
+  --logo-width: calc(var(--card-width) * 1323 / var(--px-card-width));
+  --logo-height: calc(var(--card-width) * 781 / var(--px-card-width));
+  --logo-x-offset: calc(var(--card-width) * 120 / var(--px-card-width));
+  --logo-y-offset: calc(var(--card-width) * 303 / var(--px-card-width));
 }
-.cropContainer {
-  height: 400px;
-  background-color: #333;
-  width: 100%;
+
+.outer-div {
   position: relative;
+  display: flex;
+  justify-content: center;
+  margin-inline: auto;
+  width: var(--card-width);
+  height: var(--card-height);
+}
+
+.cropper-container {
+  width: var(--card-width) !important;
+  height: var(--card-height) !important;
+}
+
+.cropper-view-box {
+  outline-width: 3px !important;
+  outline-style: dashed !important;
+}
+.cropper-face {
+  background-color: transparent !important;
+}
+
+.cropper-bg {
+  background-image: url("../../assets/Template_card_plain.png") !important;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position-x: center;
+  background-position-y: center;
+}
+
+.cropper-crop-box {
+  width: var(--logo-width) !important;
+  height: var(--logo-height) !important;
+  transform: translateX(var(--logo-x-offset)) translateY(var(--logo-y-offset)) !important;
+}
+
+.cropper-canvas {
+  display: none !important;
 }

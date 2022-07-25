@@ -2,8 +2,13 @@ import React, { useState, useRef } from "react";
 import Cropper, { ReactCropperElement } from "react-cropper";
 import "./CropImage.css";
 import "cropperjs/dist/cropper.css";
-import { IMAGE_MIN_HEIGHT_PX, IMAGE_MIN_WIDTH_PX } from "../../lib/constants";
+import { PX_DIMS } from "../../lib/constants";
 import { getFileType } from "../../lib/filetype";
+import {
+  generateTransformedLogo,
+  transformToWhiteOnTransparent,
+} from "../../lib/image_transformation";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 interface Props {
   cropConfirmCallback: (
@@ -20,6 +25,8 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
   const [imageSrc, setImageSrc] = useState<string>();
   const [filename, setFilename] = useState<string>();
   const [imageDimensions, setImageDimensions] = useState<ImgDims>();
+
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
   const cropperRef = useRef<ReactCropperElement>(null);
 
@@ -38,13 +45,22 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
           const reader = new FileReader();
           reader.addEventListener("load", () => {
             const imgSrc = reader?.result as string;
-            setImageSrc(imgSrc);
 
-            let img = new Image();
-            img.src = imgSrc;
-            img.onload = () => {
-              setImageDimensions({ width: img.width, height: img.height });
-            };
+            // Transform img to transparent bg
+            generateTransformedLogo(
+              imgSrc,
+              transformToWhiteOnTransparent,
+              "image/png",
+              (newImgSrc) => {
+                setImageSrc(newImgSrc);
+
+                let img = new Image();
+                img.src = newImgSrc;
+                img.onload = () => {
+                  setImageDimensions({ width: img.width, height: img.height });
+                };
+              }
+            );
           });
           reader.readAsDataURL(file);
         }
@@ -67,19 +83,25 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
     <div style={{ width: "100%" }}>
       <main>
         {imageSrc ? (
-          <div className="container">
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+            }}
+          >
             {imageDimensions && (
               <div>
                 <span>
-                  Width: {imageDimensions.width}, Height:{" "}
-                  {imageDimensions.height}{" "}
+                  Width: {imageDimensions.width}, Height:
+                  {imageDimensions.height}
                 </span>
                 <span>
-                  Min Width: {IMAGE_MIN_WIDTH_PX}, Min Height:{" "}
-                  {IMAGE_MIN_HEIGHT_PX}
+                  Min Width: {PX_DIMS.CARD_WIDTH}, Min Height:{" "}
+                  {PX_DIMS.CARD_HEIGHT}
                 </span>
-                {imageDimensions.width < IMAGE_MIN_WIDTH_PX ||
-                imageDimensions.height < IMAGE_MIN_HEIGHT_PX ? (
+                {imageDimensions.width < PX_DIMS.CARD_WIDTH ||
+                imageDimensions.height < PX_DIMS.CARD_HEIGHT ? (
                   <p style={{ color: "#FF4136" }}>
                     Uploaded image is too small.
                   </p>
@@ -88,21 +110,72 @@ const CropImage = ({ cropConfirmCallback }: Props) => {
                 )}
               </div>
             )}
-            <div
-              className="cropContainer"
-              style={{ display: "flex", justifyContent: "center" }}
-            >
+            <div className="outer-div">
               <Cropper
                 src={imageSrc}
-                style={{ height: "400px", width: "100%" }}
+                // style={{ height: "500px", maxWidth: "100vw" }}
                 // Cropper.js options
-                aspectRatio={IMAGE_MIN_WIDTH_PX / IMAGE_MIN_HEIGHT_PX}
+                background={true}
                 dragMode="move"
                 cropBoxMovable={false}
                 cropBoxResizable={false}
-                guides={true}
+                center={false}
+                guides={false}
+                modal={false}
                 ref={cropperRef}
+                ready={() => {
+                  if (!windowWidth || !windowHeight) {
+                    return;
+                  }
+                  const cardWidth = windowWidth * 0.5;
+
+                  const logoXOffset =
+                    (cardWidth / PX_DIMS.CARD_WIDTH) * PX_DIMS.LOGO_X_OFFSET;
+
+                  const logoYOffset =
+                    (cardWidth / PX_DIMS.CARD_WIDTH) * PX_DIMS.LOGO_Y_OFFSET;
+
+                  const logoWidth =
+                    (cardWidth / PX_DIMS.CARD_WIDTH) * PX_DIMS.LOGO_WIDTH;
+
+                  const logoHeight =
+                    (cardWidth / PX_DIMS.CARD_WIDTH) * PX_DIMS.LOGO_HEIGHT;
+
+                  cropperRef.current?.cropper.setCropBoxData({
+                    left: logoXOffset,
+                    top: logoYOffset,
+                    width: logoWidth,
+                    height: logoHeight,
+                  });
+
+                  cropperRef.current?.cropper.moveTo(logoXOffset, logoYOffset);
+                }}
               />
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  position: "absolute",
+                  bottom: "2rem",
+                  left: "-4rem",
+                }}
+              >
+                <button
+                  style={{ marginBottom: "1rem" }}
+                  onClick={() => {
+                    cropperRef.current?.cropper.zoom(0.01);
+                  }}
+                >
+                  +
+                </button>
+                <button
+                  onClick={() => {
+                    cropperRef.current?.cropper.zoom(-0.01);
+                  }}
+                >
+                  -
+                </button>
+              </div>
             </div>
             <div>
               <button
